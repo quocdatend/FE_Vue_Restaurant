@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import api from '../services/api';
+import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -9,6 +10,8 @@ export const useAuthStore = defineStore('auth', {
     async login(email, password) {
       const res = await api.post('/login', { email, password });
       this.user = res.data.user;
+      // Save the token in local storage or a cookie
+      localStorage.setItem('token', res.data.access_token);
     },
     async fetchUser() {
       const res = await api.get('/user');
@@ -20,8 +23,11 @@ export const useAuthStore = defineStore('auth', {
           this.user = res.data.user;
         });
     },
-    logout() {
+    async logout() {
+      await axios.post('/logout', {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       this.user = null;
+      // Remove the token from local storage or a cookie
+      localStorage.removeItem('token');
     },
   },
 });
