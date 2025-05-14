@@ -10,14 +10,18 @@ import MenuItem from "../pages/MenuItem.vue";
 import Booking from "../pages/Booking.vue";
 
 import LoginAdmin from "../pages/AdminLogin.vue";
+import DashboardAdmin from "../pages/AdminDashboard.vue";
 
 import { useAuthStore } from "../store/auth";
 
 const routes = [
-  { path: "/login", component: Login},
+  { path: "/login", component: Login },
   { path: "/register", component: Register },
   { path: "/", redirect: "/dashboard" },
-  { path: "/forgot-password", component: () => import("../pages/ForgotPassword.vue") },
+  {
+    path: "/forgot-password",
+    component: () => import("../pages/ForgotPassword.vue"),
+  },
   {
     path: "/dashboard",
     component: Dashboard,
@@ -35,7 +39,12 @@ const routes = [
     ],
   },
   { path: "/admin/login", component: LoginAdmin },
-  // { path: "/admin/dashboard", component: () => import("../pages/AdminDashboard.vue") },
+  {
+    path: "/admin/dashboard",
+    component: DashboardAdmin,
+    children: [],
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

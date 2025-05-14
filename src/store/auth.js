@@ -4,6 +4,7 @@ import api from '../services/api';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
+    admin: null,
   }),
 
   actions: {
@@ -26,12 +27,31 @@ export const useAuthStore = defineStore('auth', {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     },
 
+    async loginAdmin(email, password) {
+      const res = await api.post('/login', { email, password });
+      const token = res.data.access_token;
+      this.admin = res.data.user;
+
+      localStorage.setItem('token', token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`; 
+    },
+
     async fetchUser() {
       try {
-        const res = await api.get('/user/profile');
+        const res = await api.get('/admin/dashboard');
         this.user = res.data.user;
       } catch (err) {
         console.error('Không thể lấy thông tin người dùng:', err);
+        this.logout();
+      }
+    },
+
+    async fetchAdmin() {
+      try {
+        const res = await api.get('/admin/profile');
+        this.admin = res.data.user;
+      } catch (err) {
+        console.error('Không thể lấy thông tin admin:', err);
         this.logout();
       }
     },
