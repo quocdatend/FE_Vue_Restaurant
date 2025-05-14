@@ -1,3 +1,4 @@
+```
 vue-laravel-auth/
 ├── public/
 ├── src/
@@ -19,3 +20,9 @@ vue-laravel-auth/
 ├── index.html
 ├── package.json
 └── vite.config.js
+```
+## Hướng dẫn chạy
+```
+npm install
+npm run dev
+```
