@@ -8,6 +8,9 @@
       <p class="link">
         Chưa có tài khoản? <router-link to="/register">Đăng ký</router-link>
       </p>
+      <p class="link">
+        Quên mật khẩu? <router-link to="/forgot-password">Khôi phục</router-link>
+      </p>
     </form>
   </div>
 </template>

@@ -8,11 +8,14 @@ import Comments from "../pages/Comments.vue";
 import Menu from "../pages/Menu.vue";
 import MenuItem from "../pages/MenuItem.vue";
 import Booking from "../pages/Booking.vue";
+
 import { useAuthStore } from "../store/auth";
 
 const routes = [
-  { path: "/login", component: Login },
+  { path: "/login", component: Login},
   { path: "/register", component: Register },
+  { path: "/", redirect: "/dashboard" },
+  { path: "/forgot-password", component: () => import("../pages/ForgotPassword.vue") },
   {
     path: "/dashboard",
     component: Dashboard,
