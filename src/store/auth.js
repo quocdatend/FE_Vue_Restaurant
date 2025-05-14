@@ -7,6 +7,16 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   actions: {
+    // Đảm bảo khi store được khởi tạo, initialize luôn được gọi
+    async initialize() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        console.log('Token found in localStorage:', token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        await this.fetchUser(); // Tải thông tin người dùng
+      }
+    },
+
     async login(email, password) {
       const res = await api.post('/login', { email, password });
       const token = res.data.access_token;
@@ -18,11 +28,11 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchUser() {
       try {
-        const res = await api.get('/user/profile'); // hoặc /user nếu Laravel route vậy
+        const res = await api.get('/user/profile');
         this.user = res.data.user;
       } catch (err) {
         console.error('Không thể lấy thông tin người dùng:', err);
-        this.logout(); // clear user nếu token sai
+        this.logout();
       }
     },
 
@@ -44,15 +54,6 @@ export const useAuthStore = defineStore('auth', {
       this.user = null;
       localStorage.removeItem('token');
       delete api.defaults.headers.common['Authorization'];
-    },
-
-    async initialize() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        console.log('Token found in localStorage:', token);
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        await this.fetchUser();
-      }
     },
   },
 });

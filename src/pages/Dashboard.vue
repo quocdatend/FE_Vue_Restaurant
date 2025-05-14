@@ -29,8 +29,12 @@
 
 <script setup>
 import { useAuthStore } from '../store/auth';
+import { onMounted } from 'vue'
 const auth = useAuthStore();
-
+onMounted(async () => {
+  await auth.initialize();
+})
+console.log(auth.user);
 const logout = async () => {
   await auth.logout();
 };
