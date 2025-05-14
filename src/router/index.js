@@ -9,6 +9,8 @@ import Menu from "../pages/Menu.vue";
 import MenuItem from "../pages/MenuItem.vue";
 import Booking from "../pages/Booking.vue";
 
+import LoginAdmin from "../pages/AdminLogin.vue";
+
 import { useAuthStore } from "../store/auth";
 
 const routes = [
@@ -32,6 +34,8 @@ const routes = [
       { path: "menu/:slug", component: MenuItem },
     ],
   },
+  { path: "/admin/login", component: LoginAdmin },
+  // { path: "/admin/dashboard", component: () => import("../pages/AdminDashboard.vue") },
 ];
 
 const router = createRouter({
