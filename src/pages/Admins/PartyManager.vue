@@ -71,13 +71,13 @@ const openForm = () => {
 const submitForm = async () => {
   try {
     if (editing.value) {
-      await axios.post(`http://127.0.0.1:8000/api/party/update/${editingId.value}`, {
+      await axios.post(`http://127.0.0.1:8000/api/party/updateByPartyId/${editingId.value}`, {
         name: form.value.name,
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
     } else {
-      await axios.post('http://127.0.0.1:8000/api/party', {
+      await axios.post('http://127.0.0.1:8000/api/party/create', {
         name: form.value.name,
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -100,7 +100,7 @@ const editParty = (party) => {
 const deleteParty = async (id) => {
   if (confirm('Bạn có chắc muốn xoá party này?')) {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/party/${id}`, {
+      await axios.get(`http://127.0.0.1:8000/api/party/delete/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       fetchParties();
