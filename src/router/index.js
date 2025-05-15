@@ -43,7 +43,7 @@ const routes = [
     path: "/admin/dashboard",
     component: DashboardAdmin,
     children: [],
-    meta: { requiresAuth: true },
+    meta: { requiresAuthAdmin: true },
   },
 ];
 
@@ -59,6 +59,12 @@ router.beforeEach(async (to, from, next) => {
       await auth.fetchUser();
     } catch {
       return next("/login");
+    }
+  } else if (to.meta.requiresAuthAdmin && !auth.admin) {
+    try {
+      await auth.fetchAdmin();
+    } catch {
+      return next("/admin/login");
     }
   }
   next();
