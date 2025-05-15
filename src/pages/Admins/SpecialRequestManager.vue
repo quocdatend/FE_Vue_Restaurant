@@ -75,7 +75,7 @@ const submitForm = async () => {
       );
     } else {
       await axios.post(
-        "http://127.0.0.1:8000/api/order-note",
+        "http://127.0.0.1:8000/api/order-note/create",
         {
           note: form.value.note,
         },
@@ -101,7 +101,7 @@ const editNote = (note) => {
 const deleteNote = async (id) => {
   if (confirm("Bạn có chắc muốn xoá ghi chú này?")) {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/order-note/${id}`, {
+      await axios.get(`http://127.0.0.1:8000/api/order-note/delete/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       fetchNotes();
