@@ -170,6 +170,7 @@ const submitBooking = async () => {
       party_id: "",
       special_request_id: "",
     };
+    router.push({ path: '/dashboard/booking/order', query: { orderId: res.data.order.order_id } })
   } catch (err) {
     console.error("Lỗi:", err);
     message.value = "❌ Đã xảy ra lỗi khi đặt bàn.";

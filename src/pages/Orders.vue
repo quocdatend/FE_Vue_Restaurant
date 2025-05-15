@@ -69,6 +69,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // check token
 const token = localStorage.getItem("token");
@@ -166,6 +169,7 @@ const fetchOrders = async () => {
 const editOrder = (order) => {
   // Implement edit functionality
   console.log("Chỉnh sửa đơn hàng:", order);
+  router.push({ path: '/dashboard/booking/order', query: { orderId: order.order_id } })
 };
 
 const cancelOrder = async (order) => {
