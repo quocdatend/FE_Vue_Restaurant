@@ -29,10 +29,12 @@
 
 <script setup>
 import { useAuthStore } from '../store/auth';
-import { onMounted } from 'vue'
+import { onMounted, onBeforeMount } from 'vue';
+
 const auth = useAuthStore();
 onMounted(async () => {
-  await auth.initialize();
+  console.log('Đang tải dữ liệu...');
+  await auth.fetchUser();
 })
 console.log(auth.user);
 const logout = async () => {

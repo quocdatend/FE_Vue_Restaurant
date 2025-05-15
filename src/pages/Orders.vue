@@ -70,6 +70,13 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 
+// check token
+const token = localStorage.getItem("token");
+if (!token) {
+  alert("Vui lòng đăng nhập để xem đơn hàng.");
+  window.location.href = "/";
+}
+
 const orders = ref([]);
 
 const statusText = (status) => {
@@ -164,26 +171,26 @@ const editOrder = (order) => {
 const cancelOrder = async (order) => {
   if (confirm("Bạn chắc chắn muốn hủy đơn hàng?")) {
     try {
-      const token = localStorage.getItem('token');
-      await axios.get(`http://127.0.0.1:8000/api/order/cancelByUser/${order.order_id}`, 
+      const token = localStorage.getItem("token");
+      await axios.get(
+        `http://127.0.0.1:8000/api/order/cancelByUser/${order.order_id}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       alert("Đơn hàng đã được hủy!");
       fetchOrders(); // reload danh sách sau khi hủy
     } catch (error) {
-      console.error('Lỗi khi hủy đơn hàng:', error);
+      console.error("Lỗi khi hủy đơn hàng:", error);
       alert("Đã xảy ra lỗi khi hủy đơn hàng.");
     }
   } else {
     alert("Hủy đơn hàng đã bị hủy.");
   }
 };
-
 
 const payOrder = (order) => {
   // Implement payment functionality

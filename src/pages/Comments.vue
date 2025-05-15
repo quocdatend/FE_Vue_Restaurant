@@ -69,7 +69,10 @@ const fetchComments = async () => {
 
 const submitComment = async () => {
   const token = localStorage.getItem("token");
-
+  if (!token) {
+    alert("Vui lòng đăng nhập để gửi bình luận.");
+    return;
+  }
   try {
     await axios.post(
       "http://127.0.0.1:8000/api/review/create",

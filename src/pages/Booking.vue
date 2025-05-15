@@ -5,20 +5,36 @@
       <!-- Họ tên -->
       <div class="form-group">
         <label for="customer_name">Họ và tên:</label>
-        <input v-model="form.customer_name" type="text" id="customer_name" required />
+        <input
+          v-model="form.customer_name"
+          type="text"
+          id="customer_name"
+          required
+        />
       </div>
 
       <!-- Số điện thoại -->
       <div class="form-group">
         <label for="phone_number">Số điện thoại:</label>
-        <input v-model="form.phone_number" type="tel" id="phone_number" required />
+        <input
+          v-model="form.phone_number"
+          type="tel"
+          id="phone_number"
+          required
+        />
       </div>
 
       <!-- Số người -->
       <div class="form-group">
         <label>Số người:</label>
         <div class="num-people">
-          <button type="button" @click="changePeople(-1)" :disabled="form.num_people <= 1">-</button>
+          <button
+            type="button"
+            @click="changePeople(-1)"
+            :disabled="form.num_people <= 1"
+          >
+            -
+          </button>
           <span>{{ form.num_people }}</span>
           <button type="button" @click="changePeople(1)">+</button>
         </div>
@@ -38,7 +54,11 @@
         <label>Kiểu tiệc:</label>
         <select v-model="form.party_id" required>
           <option value="">-- Chọn kiểu tiệc --</option>
-          <option v-for="style in partyStyles" :key="style.party_id" :value="style.party_id">
+          <option
+            v-for="style in partyStyles"
+            :key="style.party_id"
+            :value="style.party_id"
+          >
             {{ style.name }}
           </option>
         </select>
@@ -49,7 +69,11 @@
         <label>Yêu cầu đặc biệt:</label>
         <select v-model="form.special_request_id">
           <option value="">-- Không có --</option>
-          <option v-for="note in orderNotes" :key="note.order_note_id" :value="note.order_note_id">
+          <option
+            v-for="note in orderNotes"
+            :key="note.order_note_id"
+            :value="note.order_note_id"
+          >
             {{ note.note }}
           </option>
         </select>
@@ -65,39 +89,42 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 const form = ref({
-  customer_name: '',
-  phone_number: '',
+  customer_name: "",
+  phone_number: "",
   num_people: 1,
-  order_date: '',
-  order_time: '',
-  party_id: '',
-  special_request_id: ''
+  order_date: "",
+  order_time: "",
+  party_id: "",
+  special_request_id: "",
 });
 
 const partyStyles = ref([]);
 const orderNotes = ref([]);
-const message = ref('');
+const message = ref("");
 const success = ref(true);
 
 // Load dữ liệu dropdown từ API
 const fetchDropdowns = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("Token không hợp lệ hoặc không tồn tại.");
+    window.location.href = "/dashboard";
+  }
   try {
     const [notesRes, partyRes] = await Promise.all([
-      axios.get('http://127.0.0.1:8000/api/order-note',
-      {
+      axios.get("http://127.0.0.1:8000/api/order-note", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }),
-      axios.get('http://127.0.0.1:8000/api/party',
-      {
+      axios.get("http://127.0.0.1:8000/api/party", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }),
@@ -105,7 +132,7 @@ const fetchDropdowns = async () => {
     orderNotes.value = notesRes.data.OrderNotes;
     partyStyles.value = partyRes.data.parties;
   } catch (err) {
-    console.error('Lỗi tải dữ liệu:', err);
+    console.error("Lỗi tải dữ liệu:", err);
   }
 };
 
@@ -118,30 +145,34 @@ const changePeople = (amount) => {
 };
 
 const submitBooking = async () => {
-  message.value = '';
-  console.log('Form data:', form.value);
+  message.value = "";
+  console.log("Form data:", form.value);
   try {
-    const res = await axios.post('http://127.0.0.1:8000/api/order/create', form.value, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    message.value = '✅ Đặt bàn thành công!';
+    const res = await axios.post(
+      "http://127.0.0.1:8000/api/order/create",
+      form.value,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    message.value = "✅ Đặt bàn thành công!";
     success.value = true;
 
     // Reset form
     form.value = {
-      customer_name: '',
-      phone_number: '',
+      customer_name: "",
+      phone_number: "",
       num_people: 1,
-      order_date: '',
-      order_time: '',
-      party_id: '',
-      special_request_id: ''
+      order_date: "",
+      order_time: "",
+      party_id: "",
+      special_request_id: "",
     };
   } catch (err) {
-    console.error('Lỗi:', err);
-    message.value = '❌ Đã xảy ra lỗi khi đặt bàn.';
+    console.error("Lỗi:", err);
+    message.value = "❌ Đã xảy ra lỗi khi đặt bàn.";
     success.value = false;
   }
 };
@@ -169,7 +200,8 @@ label {
   font-weight: 600;
   margin-bottom: 0.4rem;
 }
-input, select {
+input,
+select {
   padding: 0.5rem;
   font-size: 1rem;
   border-radius: 6px;
