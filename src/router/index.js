@@ -8,6 +8,8 @@ import Comments from "../pages/Comments.vue";
 import Menu from "../pages/Menu.vue";
 import MenuItem from "../pages/MenuItem.vue";
 import Booking from "../pages/Booking.vue";
+import EditOrder from "../pages/EditOrder.vue";
+import OrderItem from "../pages/OrderItems.vue"
 
 import LoginAdmin from "../pages/AdminLogin.vue";
 import DashboardAdmin from "../pages/AdminDashboard.vue";
@@ -36,6 +38,8 @@ const routes = [
       { path: "comments", component: Comments },
       { path: "menu", component: Menu },
       { path: "menu/:slug", component: MenuItem },
+      { path: 'booking/order', component: EditOrder },
+      { path: 'booking/order/detail', component: OrderItem}
     ],
   },
   { path: "/admin/login", component: LoginAdmin },
