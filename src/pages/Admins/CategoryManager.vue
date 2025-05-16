@@ -21,20 +21,13 @@
           <td>{{ cat.name }}</td>
           <td>{{ cat.slug }}</td>
           <td>
-            <img
-              :src="imageUrl(cat.image)"
-              alt="image"
-              style="width: 50px; height: auto"
-            />
+            <img :src="imageUrl(cat.image)" alt="image" style="width: 50px; height: auto" />
           </td>
           <td>
             <button @click="editCategory(cat)" style="background-color: blue">
               Sửa
             </button>
-            <button
-              @click="deleteCategory(cat.id)"
-              style="background-color: red"
-            >
+            <button @click="deleteCategory(cat.id)" style="background-color: red">
               Xoá
             </button>
             <button @click="viewItems(cat.id)" style="background-color: orange">
@@ -49,12 +42,7 @@
     <div class="form" v-if="showForm">
       <h3>{{ editing ? "Chỉnh sửa Danh mục" : "Thêm Danh mục" }}</h3>
       <form @submit.prevent="submitForm">
-        <input
-          v-model="form.name"
-          type="text"
-          placeholder="Tên danh mục"
-          required
-        />
+        <input v-model="form.name" type="text" placeholder="Tên danh mục" required />
         <input type="file" @change="handleImageUpload" />
         <button type="submit" style="background-color: green">
           {{ editing ? "Cập nhật" : "Thêm" }}
@@ -75,8 +63,10 @@
             <strong>{{ item.name }}</strong>
             <span>{{ item.price }} VND</span>
           </div>
-          <button @click="editItem(item)">Sửa</button>
-          <button @click="deleteItem(item.id)">Xoá</button>
+          <div>
+            <button @click="editItem(item)">Sửa</button>
+            <button @click="deleteItem(item.id)">Xoá</button>
+          </div>
         </div>
       </div>
       <div v-else>
@@ -92,12 +82,7 @@
     <div v-if="showAddItemForm">
       <h3>{{ editingItem ? "Sửa Món" : "Thêm Món" }}</h3>
       <form @submit.prevent="submitItemForm">
-        <input
-          v-model="itemForm.name"
-          type="text"
-          placeholder="Tên món"
-          required
-        />
+        <input v-model="itemForm.name" type="text" placeholder="Tên món" required />
         <input type="file" @change="handleItemImageUpload" />
         <textarea v-model="itemForm.description" placeholder="Mô tả"></textarea>
         <input v-model="itemForm.price" type="number" placeholder="Giá" />
@@ -301,21 +286,26 @@ table {
   border-collapse: collapse;
   margin-top: 1rem;
 }
+
 th,
 td {
   padding: 0.5rem;
   border: 1px solid #ccc;
 }
+
 th {
   background: #eee;
 }
+
 button {
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
 }
+
 .form {
   margin-top: 2rem;
 }
+
 form input,
 form textarea {
   display: block;
@@ -396,5 +386,4 @@ form textarea {
   border-radius: 6px;
   cursor: pointer;
 }
-
 </style>

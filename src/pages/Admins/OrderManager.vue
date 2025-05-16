@@ -35,12 +35,24 @@
           <td>{{ order.total_price }}</td>
           <td :class="statusClass(order.status)">{{ statusMap[order.status] || 'Không xác định' }}</td>
           <td>
+            <template v-if="order.status === -2">
+              <button @click="viewDetail(order.order_id)" style="background-color: blue;">Xem chi tiết</button>
+            </template>
             <template v-if="order.status === 1">
-              <button @click="cancelOrder(order.order_id)">Huỷ</button>
-              <button @click="confirmPayment(order.order_id)">Xác nhận thanh toán</button>
+              <button @click="cancelOrder(order.order_id)" style="background-color: red;">Huỷ</button>
+              <button @click="confirmPayment(order.order_id)" style="background-color: green;">Xác nhận thanh toán</button>
             </template>
             <template v-else-if="order.status === 2">
-              <button @click="markAsCompleted(order.order_id)">Xác nhận hoàn thành</button>
+              <button @click="markAsCompleted(order.order_id)" style="background-color: green;">Xác nhận</button>
+              <button @click="cancelOrder(order.order_id)" style="background-color: red;">Huỷ</button>
+            </template>
+            <template v-else-if="order.status === 4">
+              <button @click="confirmOrder(order.order_id)" style="background-color: green;">Xác nhận</button>
+              <button @click="cancelOrder(order.order_id)" style="background-color: red;">Huỷ</button>
+            </template>
+            <template v-else-if="order.status === 5">
+              <button @click="completed(order.order_id)"style="background-color: green;">Hoàn thành</button>
+              <button @click="cancelOrder(order.order_id)" style="background-color: red;">Huỷ</button>
             </template>
             <template v-else>
               <span>No action</span>
@@ -62,10 +74,12 @@ const statusFilter = ref('');
 const statusMap = {
   '-2': 'Bị Hủy Đơn Đặt',
   '-1': 'Đã Hủy',
-   0: 'Đang xử lý',
-   1: 'Chưa Thanh Toán',
-   2: 'Đã Thanh Toán',
-   3: 'Hoàn Thành',
+  0: 'Đang xử lý',
+  1: 'Chưa Thanh Toán',
+  2: 'Đã Thanh Toán',
+  3: 'Hoàn Thành',
+  4: 'Chờ Xác Nhận',
+  5: 'Xác Nhận'
 };
 
 const fetchOrders = async () => {
@@ -77,11 +91,11 @@ const fetchOrders = async () => {
 
   for (const order of allOrders) {
     const noteRes = await axios.get(`http://127.0.0.1:8000/api/order-note/${order.special_request_id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const partyRes = await axios.get(`http://127.0.0.1:8000/api/party/${order.party_id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     order.special_note = noteRes.data?.data[0]?.note || '';
     order.party_name = partyRes.data?.party?.name || '';
@@ -98,7 +112,7 @@ const filteredOrders = computed(() => {
 const cancelOrder = async (id) => {
   if (confirm('Bạn có chắc muốn huỷ đơn hàng?')) {
     const token = localStorage.getItem('token');
-    await axios.post(`http://127.0.0.1:8000/api/order/cancelByUser`, { order_id: id }, {
+    await axios.get(`http://127.0.0.1:8000/api/order/rejectOrder/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     fetchOrders();
@@ -107,7 +121,23 @@ const cancelOrder = async (id) => {
 
 const confirmPayment = async (id) => {
   const token = localStorage.getItem('token');
-  await axios.post(`http://127.0.0.1:8000/api/order/confirmPayment`, { order_id: id }, {
+  await axios.get(`http://127.0.0.1:8000/api/order/confirmPayment/${id}`,{
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  fetchOrders();
+};
+
+const completed = async (id) => {
+  const token = localStorage.getItem('token');
+  await axios.get(`http://127.0.0.1:8000/api/order/statusCompleted/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  fetchOrders();
+};
+
+const confirmOrder = async (id) => {
+  const token = localStorage.getItem('token');
+  await axios.get(`http://127.0.0.1:8000/api/order/statusConfirmed/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   fetchOrders();
@@ -115,7 +145,7 @@ const confirmPayment = async (id) => {
 
 const markAsCompleted = async (id) => {
   const token = localStorage.getItem('token');
-  await axios.post(`http://127.0.0.1:8000/api/order/complete`, { order_id: id }, {
+  await axios.get(`http://127.0.0.1:8000/api/order/statusConfirmed/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   fetchOrders();
@@ -129,6 +159,8 @@ const statusClass = (status) => {
     1: 'status-unpaid',
     2: 'status-paid',
     3: 'status-completed',
+    4: 'status-pending-confirmation',
+    5: 'status-confirmed',
   }[status] || '';
 };
 
@@ -141,41 +173,66 @@ table {
   border-collapse: collapse;
   margin-top: 1rem;
 }
-th, td {
+
+th,
+td {
   padding: 0.5rem;
   border: 1px solid #ccc;
 }
+
 th {
   background: #eee;
 }
+
+button {
+  margin-bottom: 1rem;
+}
+
 .status-cancelled {
   background-color: #ffcccc;
   color: red;
   font-weight: bold;
 }
+
 .status-deleted {
   background-color: #ffe0cc;
   color: darkorange;
   font-weight: bold;
 }
+
 .status-processing {
   background-color: #ffffcc;
   color: orange;
   font-weight: bold;
 }
+
 .status-unpaid {
   background-color: #fffbe6;
   color: goldenrod;
   font-weight: bold;
 }
+
 .status-paid {
   background-color: #ccffcc;
   color: green;
   font-weight: bold;
 }
+
 .status-completed {
   background-color: #d4f0ff;
   color: blue;
+  font-weight: bold;
+}
+
+.status-pending-confirmation {
+  background-color: #fdf5e6;
+  color: #d2691e;
+  font-weight: bold;
+}
+
+.status-confirmed {
+  background-color: #e6f7ff;
+  color: #007acc;
   font-weight: bold;
 }
 </style>

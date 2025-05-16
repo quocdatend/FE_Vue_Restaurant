@@ -32,33 +32,24 @@
             {{ statusText(order.status) }}
           </td>
           <td>
-            <button
-              v-if="order.status === 0"
-              @click="editOrder(order)"
-              style="background-color: orange"
-            >
+            <button v-if="order.status === 0" @click="editOrder(order)" style="background-color: blue">
               Chỉnh sửa
             </button>
-            <button
-              v-if="order.status === 0"
-              @click="cancelOrder(order)"
-              style="background-color: red"
-            >
-              Hủy
+            <button v-if="order.status === 0 || order.status === 1" @click="sendConfirm(order)"
+              style="background-color: orange">
+              Xin Xác Nhận
             </button>
-            <button
-              v-if="order.status === 1"
-              @click="payOrder(order)"
-              style="background-color: green"
-            >
+            <button v-if="order.status === 1 || order.status === 0" @click="payOrder(order)"
+              style="background-color: green">
               Thanh toán
             </button>
-            <button
-              v-if="order.status === 2 || order.status === 3"
-              @click="viewOrder(order)"
-              style="background-color: blue"
-            >
+            <button v-if="order.status === 2 || order.status === 3 || order.status === 4 || order.status === 5"
+              @click="viewOrder(order)" style="background-color: blue">
               Xem chi tiết
+            </button>
+            <button v-if="order.status === 0 || order.status === 1 || order.status === 4" @click="cancelOrder(order)"
+              style="background-color: red">
+              Hủy
             </button>
           </td>
         </tr>
@@ -96,6 +87,10 @@ const statusText = (status) => {
       return "Đã Thanh Toán";
     case 3:
       return "Hoàn Thành";
+    case 4:
+      return "Chờ Xác Nhận";
+    case 5:
+      return "Xác Nhận";
     default:
       return "Không xác định";
   }
@@ -115,6 +110,10 @@ const statusClass = (status) => {
       return "status-paid";
     case 3:
       return "status-completed";
+    case 4:
+      return "status-pending-confirmation";
+    case 5:
+      return "status-confirmed";
     default:
       return "";
   }
@@ -172,6 +171,29 @@ const editOrder = (order) => {
   router.push({ path: '/dashboard/booking/order', query: { orderId: order.order_id } })
 };
 
+const sendConfirm = async (order) => {
+  if (confirm("Bạn có chắc chắn muốn gửi xác nhận đơn hàng này (Bạn chưa thanh toán)?")) {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.get(
+        `http://127.0.0.1:8000/api/order/confirmOrder/${order.order_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("Đã gửi xác nhận!");
+      fetchOrders(); // reload danh sách sau khi xác nhận
+    } catch (error) {
+      console.error("Lỗi khi gửi xác nhận đơn hàng:", error);
+      alert("Đã xảy ra lỗi khi gửi xác nhận đơn hàng.");
+    }
+  } else {
+    alert("Xác nhận đơn hàng đã bị hủy.");
+  }
+};
+
 const cancelOrder = async (order) => {
   if (confirm("Bạn chắc chắn muốn hủy đơn hàng?")) {
     try {
@@ -202,8 +224,7 @@ const payOrder = (order) => {
 };
 
 const viewOrder = (order) => {
-  // Implement view details functionality
-  console.log("Xem chi tiết đơn hàng:", order);
+  router.push({ path: '/dashboard/booking/order/detail', query: { orderId: order.order_id } })
 };
 
 onMounted(() => {
@@ -214,6 +235,7 @@ onMounted(() => {
 .orders {
   padding: 2rem;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -222,35 +244,55 @@ table {
   overflow: hidden;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
 }
+
 th,
 td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
+
 tr:last-child td {
   border-bottom: none;
 }
+
 .status-processing {
   color: orange;
   font-weight: bold;
 }
+
 .status-unpaid {
   color: red;
   font-weight: bold;
 }
+
 .status-paid {
   color: green;
   font-weight: bold;
 }
+
 .status-completed {
   color: blue;
   font-weight: bold;
 }
+
 .status-cancelled {
   color: gray;
   font-weight: bold;
 }
+
+.status-pending-confirmation {
+  /* background-color: #fdf5e6; */
+  color: #d2691e;
+  font-weight: bold;
+}
+
+.status-confirmed {
+  /* background-color: #e6f7ff; */
+  color: #007acc;
+  font-weight: bold;
+}
+
 button {
   margin-right: 0.5rem;
   padding: 0.5rem 1rem;

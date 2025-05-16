@@ -91,6 +91,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 const form = ref({
   customer_name: "",
@@ -102,6 +103,7 @@ const form = ref({
   special_request_id: "",
 });
 
+const router = useRouter();
 const partyStyles = ref([]);
 const orderNotes = ref([]);
 const message = ref("");
