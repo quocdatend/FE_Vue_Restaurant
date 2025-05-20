@@ -31,9 +31,9 @@ const getImageUrl = (imagePath) => {
 const fetchCategories = async () => {
   try {
     const res = await axios.get('http://127.0.0.1:8000/api/category')
-    if (res.data.status === 'success') {
-      categories.value = res.data.categories
-    }
+    // if (res.data.status === 'success') {
+      categories.value = res.data.data
+    // }
   } catch (error) {
     console.error('Lỗi khi tải danh mục:', error)
   } finally {

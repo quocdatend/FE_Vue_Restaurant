@@ -39,7 +39,7 @@
               style="background-color: orange">
               Xin Xác Nhận
             </button>
-            <button v-if="order.status === 1 || order.status === 0" @click="payOrder(order)"
+            <button v-if="order.status === 1 || order.status === 0" @click="payOrder(order.order_id)"
               style="background-color: green">
               Thanh toán
             </button>
@@ -218,9 +218,22 @@ const cancelOrder = async (order) => {
   }
 };
 
-const payOrder = (order) => {
-  // Implement payment functionality
-  console.log("Thanh toán đơn hàng:", order);
+const payOrder = async (orderId) => {
+  const res = await axios.get(`http://127.0.0.1:8000/api/order-item/findByOrder/${orderId}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+  let items = res.data.order_items;
+  let totalAmount = items.reduce((sum, item) => sum + parseFloat(item.total_price), 0);
+  if (res.data.order_items.length == 0) {
+    alert('Bạn chưa có món nào!');
+  } else {
+    const data =  await axios.post('http://127.0.0.1:8000/api/payment/create', { order_id: orderId, total_price: totalAmount }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    const url = data.data.data;
+    alert('Tiến hành thanh toán đơn hàng!');
+    window.open(url, '_blank')
+  }
 };
 
 const viewOrder = (order) => {

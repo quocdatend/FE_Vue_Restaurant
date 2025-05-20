@@ -124,7 +124,7 @@ const imageUrl = (path) => `http://127.0.0.1:8000/storage/${path}`;
 const fetchCategories = async () => {
   try {
     const res = await axios.get("http://127.0.0.1:8000/api/category");
-    categories.value = res.data.categories;
+    categories.value = res.data.data;
   } catch (err) {
     console.error("Lỗi khi tải danh mục:", err);
   }

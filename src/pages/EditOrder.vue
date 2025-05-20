@@ -56,7 +56,7 @@ const orderItems = ref([]);
 
 const fetchCategories = async () => {
   const res = await axios.get('http://127.0.0.1:8000/api/category');
-  categories.value = res.data.categories;
+  categories.value = res.data.data;
 };
 
 const fetchMenus = async (categoryId) => {
@@ -158,7 +158,7 @@ const makePayment = async () => {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     });
     const url = data.data.data;
-    alert('Đã thanh toán đơn hàng!');
+    alert('Tiến hành thanh toán đơn hàng!');
     window.open(url, '_blank')
   }
 };
